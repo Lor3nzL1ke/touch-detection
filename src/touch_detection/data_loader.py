@@ -11,4 +11,5 @@ def fetch_data(channels: tuple, file_name: str, directory: str = "data") -> torc
         raise Exception("Sorry, this file doesn't exist.")
 
     tdms_file = TdmsFile.read(file_path)
-    print(type(tdms_file))
+    tdms_group = tdms_file['Data']
+    print(tdms_group.channels())
