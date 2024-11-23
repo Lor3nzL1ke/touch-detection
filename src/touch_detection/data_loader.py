@@ -12,4 +12,5 @@ def fetch_data(channels: tuple, file_name: str, directory: str = "data") -> torc
 
     tdms_file = TdmsFile.read(file_path)
     tdms_group = tdms_file['Data']
+
     print(tdms_group.channels())
