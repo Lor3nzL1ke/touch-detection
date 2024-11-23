@@ -8,4 +8,7 @@ def run():
     channel_names = ('Index', 'FX_S1Plus2_COMP_T', 'FY_S1Plus2_COMP_T',
                      'FZ_S1Plus2_COMP_T', 'POSX_T', 'POSY_T', 'POSZ_T')
 
-    fetch_data(channel_names, file_name, directory)
+    data = fetch_data(channel_names, file_name, directory)
+
+    print(data.size())
+    print(data)
