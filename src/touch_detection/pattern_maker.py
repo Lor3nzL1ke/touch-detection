@@ -1,4 +1,5 @@
 import torch
+import matplotlib.pyplot as plt
 
 
 class Pattern:
@@ -19,36 +20,43 @@ class Pattern:
             start_index = int(round(start_position * self.frequency, 0))
             end_index = int(round(end_position * self.frequency, 0))
 
-            constant_level = level * torch.ones(end_index - start_index - 1)
+            points = level * torch.ones(end_index - start_index)
 
-            return constant_level
+            return points
 
         def generate_linear_increase(start_position: float, start_level: float, end_position: float, end_level: float) -> torch.Tensor:
 
             slope = (end_level - start_level) / (end_position - start_position)
             intercept = start_level
 
-            linear_increase = slope * torch.range(0, end_position - start_position, pow(self.frequency, -1)) + intercept
-            # torch.range() may be removed in future pytorch releases! Look into switching to torch.arange()
+            points = slope * torch.arange(pow(self.frequency, -1), end_position - start_position, pow(self.frequency, -1)) + intercept
 
-            return linear_increase
+            return points
 
-        level_low_start = 0
-        level_low_end = self.horizontal_midpoint - (self.length_slot / 2)
+        low_level_start = 0
+        low_level_end = self.horizontal_midpoint - (self.length_slot / 2)
 
-        level_low_points = generate_constant_level(level_low_start, level_low_end, self.level_low)
+        low_level_points = generate_constant_level(low_level_start, low_level_end, self.level_low)
 
-        level_high_start = self.horizontal_midpoint + (self.length_slot / 2)
-        level_high_end = self.length_pattern
+        high_level_start = self.horizontal_midpoint + (self.length_slot / 2)
+        high_level_end = self.length_pattern
 
-        level_high_points = generate_constant_level(level_high_start, level_high_end, self.level_high)
+        high_level_points = generate_constant_level(high_level_start, high_level_end, self.level_high)
 
-        linear_increase_points = generate_linear_increase(level_low_end, self.level_low, level_high_start, self.level_high)
+        linear_increase_points = generate_linear_increase(low_level_end, self.level_low, high_level_start, self.level_high)
 
-        pattern_points = torch.cat((level_low_points, linear_increase_points, level_high_points))
+        pattern_points = torch.cat((low_level_points, linear_increase_points, high_level_points))
 
         return pattern_points
 
     def plot(self):
 
-        return 0
+        y_values = self.assemble()
+        x_values = torch.arange(0, self.length_pattern, pow(self.frequency, -1))
+
+        fig, ax = plt.subplots()
+        ax.plot(x_values, y_values)
+        plt.grid()
+        plt.show()
+
+        return None

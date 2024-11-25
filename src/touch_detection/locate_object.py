@@ -19,5 +19,5 @@ def run():
     data_force_raw = data[:, 1:4]                       # in Newtons (1 N)
     data_position_raw = data[:, 4:7] * pow(10, -3)      # in meters  (1 m)
 
-    pattern = Pattern(5, 0, 1, 2, 1, 4)
+    pattern = Pattern(25, 0, 1, 2, 1, 4)
     points = pattern.assemble()
