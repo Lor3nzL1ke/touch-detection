@@ -36,20 +36,18 @@ class Pattern:
         low_level_start = 0
         low_level_end = self.horizontal_midpoint - (self.length_slot / 2)
 
-        low_level_points = generate_constant_level(low_level_start, low_level_end, self.level_low)
-
         high_level_start = self.horizontal_midpoint + (self.length_slot / 2)
         high_level_end = self.length_pattern
 
+        low_level_points = generate_constant_level(low_level_start, low_level_end, self.level_low)
         high_level_points = generate_constant_level(high_level_start, high_level_end, self.level_high)
-
         linear_increase_points = generate_linear_increase(low_level_end, self.level_low, high_level_start, self.level_high)
 
         pattern_points = torch.cat((low_level_points, linear_increase_points, high_level_points))
 
         return pattern_points
 
-    def plot(self):
+    def plot(self) -> None:
 
         y_values = self.assemble()
         x_values = torch.arange(0, self.length_pattern, pow(self.frequency, -1))

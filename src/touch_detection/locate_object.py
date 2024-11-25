@@ -1,7 +1,7 @@
 import torch
-
-from data_loader import fetch_data
-from pattern_maker import Pattern
+import time
+from data_loader import fetch_data, cache_data
+from pattern_creation import Pattern
 
 
 def run():
@@ -19,5 +19,24 @@ def run():
     data_force_raw = data[:, 1:4]                       # in Newtons (1 N)
     data_position_raw = data[:, 4:7] * pow(10, -3)      # in meters  (1 m)
 
-    pattern = Pattern(25, 0, 1, 2, 1, 4)
-    points = pattern.assemble()
+    pattern = Pattern(data_frequency, 0, 1.5, 0.125, 0.08, 0.25)
+    pattern_points = pattern.assemble()
+
+    window_length = 1000
+    cache_length = int(data_frequency * pattern.length_pattern + window_length)
+
+    axes = [1, 2]
+
+    start_time = time.perf_counter()
+
+    for axis in axes:
+
+        for time_step in range(cache_length, data_length):
+
+            cached_time, cached_forces_raw, cached_positions_raw = cache_data(time_step, cache_length, data_time,
+                                                                              data_force_raw, data_position_raw)
+
+
+    end_time = time.perf_counter()
+
+    print(f"Total elapsed time: {end_time - start_time:.2f} seconds.")
