@@ -30,7 +30,7 @@ def fetch_data(channels: tuple, file_name: str, directory: str = "data") -> (tor
 
 def cache_data(start_index: int, cache_length: int, time: torch.Tensor, forces: torch.Tensor, positions: torch.Tensor) -> (torch.Tensor, torch.Tensor, torch.Tensor):
 
-    cache_interval_start = start_index - cache_length + 1
+    cache_interval_start = start_index - cache_length
     cache_interval_end = start_index + 1
 
     cached_time = time[cache_interval_start:cache_interval_end]

@@ -1,6 +1,8 @@
 import torch
 import time
+
 from data_loader import fetch_data, cache_data
+from data_analysis import smooth_data, cross_correlate
 from pattern_creation import Pattern
 
 
@@ -25,7 +27,15 @@ def run():
     window_length = 1000
     cache_length = int(data_frequency * pattern.length_pattern + window_length)
 
-    axes = [1, 2]
+    axes = [0, 1]
+
+    similarity_now = 0
+    similarity_previous = 0
+    similarity_threshold = 0.995
+
+    smoothing_coefficient_1 = 0.99
+    smoothing_coefficient_2 = 0.85
+    smoothing_coefficient_3 = 0.50
 
     start_time = time.perf_counter()
 
@@ -33,9 +43,34 @@ def run():
 
         for time_step in range(cache_length, data_length):
 
-            cached_time, cached_forces_raw, cached_positions_raw = cache_data(time_step, cache_length, data_time,
-                                                                              data_force_raw, data_position_raw)
+            # needs better variable names to distinguish between raw data, smooth data, and cached data
+            time_data, force_data, position_data = cache_data(time_step, cache_length, data_time, data_force_raw, data_position_raw)
 
+            interval = slice(window_length / 2, cache_length - (window_length / 2))     # also needs a better name
+
+            """
+            Pattern Recognition
+            """
+
+            smoothed_force_data = smooth_data(force_data, 'exponential', smoothing_coefficient_1)
+
+            similarity_now = cross_correlate(pattern_points, smoothed_force_data[interval, axis])
+
+            # this logic definitely needs some explaining
+            if (similarity_previous ** 2) <= similarity_threshold or (similarity_now ** 2) > similarity_threshold:
+                continue
+
+            """
+            Linear Intersection
+            """
+
+            smoothed_force_data = smooth_data(force_data, 'exponential', smoothing_coefficient_2)
+
+
+
+
+
+            similarity_previous = similarity_now
 
     end_time = time.perf_counter()
 

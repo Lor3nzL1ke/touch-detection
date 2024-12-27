@@ -1,12 +1,15 @@
 import torch
 
 
-def display_result():
+def display_results():
 
     return None
 
 
 def write_output_file():
+
+    # matlab .m
+    # excel/... .csv
 
     return None
 
