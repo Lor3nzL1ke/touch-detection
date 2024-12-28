@@ -38,3 +38,12 @@ def cross_correlate(u_values: torch.Tensor, v_values: torch.Tensor) -> float:
                                / (torch.linalg.vector_norm(u_values - u_mean) * torch.linalg.vector_norm(v_values - v_mean)))
 
     return correlation_coefficient
+
+
+def get_linear_regression(x_values: torch.Tensor, y_values: torch.Tensor) -> torch.Tensor:
+
+    extended_x_values = torch.cat((torch.ones_like(x_values), x_values), 1)
+
+    parameters = torch.linalg.lstsq(extended_x_values, y_values).solution
+
+    return parameters

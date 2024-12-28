@@ -1,14 +1,42 @@
+import torch
+import yaml
+
 from os import path
 from nptdms import TdmsFile
-import torch
+from dataclasses import dataclass
 
 
-def fetch_data(channels: tuple, file_name: str, directory: str = "data") -> (torch.Tensor, int):
+@dataclass
+class Constants:
+    FILE_NAME: str
+    CHANNELS: list
+    DATA_FREQUENCY: int
+    PATTERN_CONFIG: dict
 
-    file_path: str = path.join("../..", directory, file_name)
+
+def import_constants(file_path: str) -> Constants:
 
     if not path.exists(file_path):
-        raise Exception("Sorry, this file doesn't exist.")
+        raise FileNotFoundError("Sorry, this file doesn't exist: '" + file_path + "'")
+
+    with open(file_path, 'rt') as stream:
+        try:
+            constants_dict = (yaml.safe_load(stream))
+
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    constants = Constants(**constants_dict)
+
+    return constants
+
+
+def fetch_data(channels: list, file_name: str) -> (torch.Tensor, int):
+
+    file_path: str = path.join("../../data", file_name)
+
+    if not path.exists(file_path):
+        raise FileNotFoundError("Sorry, this file doesn't exist: '" + file_path + "'")
 
     tdms_file = TdmsFile.read(file_path)
     tdms_group = tdms_file[tdms_file.groups()[0].name]

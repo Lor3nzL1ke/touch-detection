@@ -3,15 +3,14 @@ import matplotlib.pyplot as plt
 
 
 class Pattern:
-    def __init__(self, frequency: int, level_low: float, level_high: float, horizontal_midpoint: float,
-                 length_slot: float, length_pattern: float):
+    def __init__(self, frequency: int, config: dict):
 
         self.frequency = frequency
-        self.level_low = level_low
-        self.level_high = level_high
-        self.horizontal_midpoint = horizontal_midpoint
-        self.length_slot = length_slot
-        self.length_pattern = length_pattern
+        self.min_value = config['MIN_VALUE']
+        self.max_value = config['MAX_VALUE']
+        self.midpoint = config['MIDPOINT']
+        self.slot_width = config['SLOT_WIDTH']
+        self.total_length = config['TOTAL_LENGTH']
 
     def assemble(self) -> torch.Tensor:
 
@@ -34,14 +33,14 @@ class Pattern:
             return points
 
         low_level_start = 0
-        low_level_end = self.horizontal_midpoint - (self.length_slot / 2)
+        low_level_end = self.midpoint - (self.slot_width / 2)
 
-        high_level_start = self.horizontal_midpoint + (self.length_slot / 2)
-        high_level_end = self.length_pattern
+        high_level_start = self.midpoint + (self.slot_width / 2)
+        high_level_end = self.total_length
 
-        low_level_points = generate_constant_level(low_level_start, low_level_end, self.level_low)
-        high_level_points = generate_constant_level(high_level_start, high_level_end, self.level_high)
-        linear_increase_points = generate_linear_increase(low_level_end, self.level_low, high_level_start, self.level_high)
+        low_level_points = generate_constant_level(low_level_start, low_level_end, self.min_value)
+        high_level_points = generate_constant_level(high_level_start, high_level_end, self.max_value)
+        linear_increase_points = generate_linear_increase(low_level_end, self.min_value, high_level_start, self.max_value)
 
         pattern_points = torch.cat((low_level_points, linear_increase_points, high_level_points))
 
@@ -50,7 +49,7 @@ class Pattern:
     def plot(self) -> None:
 
         y_values = self.assemble()
-        x_values = torch.arange(0, self.length_pattern, pow(self.frequency, -1))
+        x_values = torch.arange(0, self.total_length, pow(self.frequency, -1))
 
         fig, ax = plt.subplots()
         ax.plot(x_values, y_values)

@@ -1,36 +1,33 @@
 import torch
 import time
 
-from data_loader import fetch_data, cache_data
-from data_analysis import smooth_data, cross_correlate
+from data_loader import import_constants, fetch_data, cache_data
+from data_analysis import smooth_data, cross_correlate, get_linear_regression
 from pattern_creation import Pattern
 
 
 def run():
 
-    file_name = "default_D18_F40.tdms"
-    directory = "data"
-    channel_names = ('Index', 'FX_S1Plus2_COMP_T', 'FY_S1Plus2_COMP_T',
-                     'FZ_S1Plus2_COMP_T', 'POSX_T', 'POSY_T', 'POSZ_T')
+    constants = import_constants('constants.yaml')
 
-    data, data_length = fetch_data(channel_names, file_name, directory)
+    data, data_length = fetch_data(constants.CHANNELS, constants.FILE_NAME)
 
-    data_frequency = 8000                               # in Hertz  (1 Hz)
-
-    data_time = data[:, 0] * pow(data_frequency, -1)    # in seconds (1 s)
+    data_time = data[:, 0] * pow(constants.DATA_FREQUENCY, -1)    # in seconds (1 s)
     data_force_raw = data[:, 1:4]                       # in Newtons (1 N)
     data_position_raw = data[:, 4:7] * pow(10, -3)      # in meters  (1 m)
 
-    pattern = Pattern(data_frequency, 0, 1.5, 0.125, 0.08, 0.25)
+    pattern = Pattern(constants.DATA_FREQUENCY, constants.PATTERN_CONFIG)
     pattern_points = pattern.assemble()
 
-    window_length = 1000
-    cache_length = int(data_frequency * pattern.length_pattern + window_length)
+    window_length = 1000        # has to be even, I think? What happens if it isn't?
+    regression_length = 601
+    cache_length = int(constants.DATA_FREQUENCY * pattern.total_length + window_length)
 
     axes = [0, 1]
 
     similarity_now = 0
     similarity_previous = 0
+
     similarity_threshold = 0.995
 
     smoothing_coefficient_1 = 0.99
@@ -65,6 +62,15 @@ def run():
             """
 
             smoothed_force_data = smooth_data(force_data, 'exponential', smoothing_coefficient_2)
+
+            # extract calculations from range()
+            for cache_index in range(int(regression_length + (window_length / 2) + 1), int(cache_length - (window_length / 2))):
+
+                time_values = time_data[(cache_index - cache_length): cache_index]
+                force_values = smoothed_force_data[(cache_index - cache_length): cache_index]
+
+                parameters = get_linear_regression(time_values, force_values)
+
 
 
 
