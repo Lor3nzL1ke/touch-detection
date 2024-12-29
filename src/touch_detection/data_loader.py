@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Constants:
+class Config:
     FILE_NAME: str
     CHANNELS: list
     DATA_FREQUENCY: int
@@ -19,21 +19,21 @@ class Constants:
     SMOOTHING_FACTOR_3: float
 
 
-def import_constants(file_path: str) -> Constants:
+def import_config(file_path: str) -> Config:
 
     if not path.exists(file_path):
         raise FileNotFoundError("Sorry, this file doesn't exist: '" + file_path + "'")
 
     with open(file_path, 'rt') as stream:
         try:
-            constants_dict = (yaml.safe_load(stream))
+            config_dict = (yaml.safe_load(stream))
 
         except yaml.YAMLError as exc:
             print(exc)
 
-    constants = Constants(**constants_dict)
+    config = Config(**config_dict)
 
-    return constants
+    return config
 
 
 def fetch_data(channels: list, file_name: str) -> (torch.Tensor, int):
