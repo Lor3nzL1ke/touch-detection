@@ -12,6 +12,11 @@ class Constants:
     CHANNELS: list
     DATA_FREQUENCY: int
     PATTERN_CONFIG: dict
+    AXES: list
+    SIMILARITY_THRESHOLD: float
+    SMOOTHING_FACTOR_1: float
+    SMOOTHING_FACTOR_2: float
+    SMOOTHING_FACTOR_3: float
 
 
 def import_constants(file_path: str) -> Constants:

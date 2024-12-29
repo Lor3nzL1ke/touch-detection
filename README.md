@@ -19,6 +19,11 @@ aus dem Gebiet der Signalverarbeitung, welche im nächsten Abschnitt vorgestellt
 Glättungsmethoden, Bestimmung der Ähnlichkeit zweier Folgen, Lineare Regression, Lineare Interpolation
 
 ## Aufbau des Algorithmus
+"Der Algorithmus imitiert zur runtime eintreffende Daten, d.h. es wird nicht davon ausgegangen, dass zum
+Start des Programms bereits alle Daten vorliegen. Wird davon ausgegangen, dass die Daten bereits alle
+vorliegen, lässt sich die innere Schleife maßgeblich beschleunigen: Es müssen nicht zu jedem Zeitpunkt die
+gechachten Kraftdaten geglättet werden, sondern lediglich einmal die gesamte Datenreihe vor dem Start der
+Analyse."
 
 ## Ergebnisse
 

@@ -1,3 +1,4 @@
+# .tdms file import
 FILE_NAME: default_D18_F40.tdms
 CHANNELS:
   - Index
@@ -7,7 +8,16 @@ CHANNELS:
   - POSX_T
   - POSY_T
   - POSZ_T
+
+# data analysis
 DATA_FREQUENCY: 8000
+AXES: [ 0 , 1 ]
+SIMILARITY_THRESHOLD: 0.995
+SMOOTHING_FACTOR_1: 0.99
+SMOOTHING_FACTOR_2: 0.85
+SMOOTHING_FACTOR_3: 0.50
+
+# pattern creation
 PATTERN_CONFIG:
   MIN_VALUE: 0.0
   MAX_VALUE: 1.5
